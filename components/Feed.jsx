@@ -21,19 +21,37 @@ const PromptCardList = ({ data, handleTagClick }) => {
 const Feed = () => {
   const [searchText, setSearchText] = useState('');
   const [posts, setPosts] = useState([]);
+  const [searchTimeout, setSearchTimeout] = useState(null);
 
-  const handleSearchChange = (e) => {};
+  const handleSearchChange = (e) => {
+    clearTimeout(searchTimeout);
+
+    setSearchText(e.target.value);
+
+    setSearchTimeout(
+      setTimeout(async () => {
+        await fetchPosts(e.target.value);
+      }, 500)
+    );
+  };
+
+  const onTagClick = async (tagValue) => {
+    setSearchText(tagValue);
+    await fetchPosts(tagValue);
+  };
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch('/api/prompts');
-      const data = await response.json();
-
-      setPosts(data);
-    };
-
-    fetchPosts();
+    fetchPosts(searchText);
   }, []);
+
+  const fetchPosts = async (searchQuery) => {
+    console.log(searchQuery);
+
+    const response = await fetch(`/api/prompts?search=${searchQuery}`);
+    const data = await response.json();
+
+    setPosts(data);
+  };
 
   return (
     <section className="feed">
@@ -48,7 +66,7 @@ const Feed = () => {
         />
       </form>
 
-      <PromptCardList data={posts} handleTagClick={() => {}} />
+      <PromptCardList data={posts} handleTagClick={onTagClick} />
     </section>
   );
 };
