@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import Profile from '@components/profile';
+import Profile from '@components/Profile';
 
 const OtherUserProfile = ({ params }) => {
   const [posts, setPosts] = useState([]);
